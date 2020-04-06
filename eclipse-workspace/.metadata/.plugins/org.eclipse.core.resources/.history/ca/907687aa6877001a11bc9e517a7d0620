@@ -1,0 +1,103 @@
+package online.ideaup;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
+
+public class mmsg implements Runnable {
+
+	public static void main(String[] args) {
+		if (args.length == 1) {
+			File imageDir = new File(args[0]);
+			if (imageDir.exists() && imageDir.isDirectory()) {
+				new mmsg(imageDir).run();
+			} else {
+				System.out.println("'"+ imageDir +"' doesn't exist or is not a directory");
+				System.exit(1);
+			}
+		} else {
+			System.out.println("Sorry, Charlie");
+
+		}
+	}
+
+	public mmsg(File imageDir) {
+		_imageDir = imageDir;
+	}
+	
+	
+	@Override
+	public void run() {
+		File[] files = _imageDir.listFiles();
+		ArrayList<File> images = new ArrayList<File>();
+		
+		if (files != null) {
+			for (File f : files) {
+				if (f.isFile() && f.getName().toLowerCase().endsWith("nef")) {
+					images.add(f);
+				}
+			} 
+			
+			images.sort(new Comparator<File>() {
+
+				@Override
+				public int compare(File o1, File o2) {
+					Date d1 = getDateTimeOriginal(o1);
+					Date d2 = getDateTimeOriginal(o2);
+					
+					if ((d1 != null) && (d2 != null)) {
+						return d1.compareTo(d2);
+					} else {
+						System.out.println("Shit was null!");
+						return 0;
+					}
+				}
+			});
+			
+			for (File f : images) {
+				System.out.println(f.getName());
+			}
+		} else {
+			System.out.println("file list is null! - "+ _imageDir);
+		}
+
+	}
+
+	private Date getDateTimeOriginal(File f) {
+		Date dtOriginal = null;
+		try {
+			Metadata m = ImageMetadataReader.readMetadata(f);
+			
+			Collection<ExifSubIFDDirectory> dirsToCheck = m.getDirectoriesOfType(ExifSubIFDDirectory.class);
+			for (ExifSubIFDDirectory dir : dirsToCheck) {
+				if (dir.containsTag(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)) {
+					dtOriginal = dir.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+					break;
+				}
+			}
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+		}
+		
+		return dtOriginal;
+	}
+	
+	private static class ImageFile {
+		public ImageFile(File f, Date dtOriginal) {
+			this.f = f;
+			this.dtOriginal = dtOriginal;
+		}
+
+		public File f;
+		public Date dtOriginal;
+	}
+	
+	private File _imageDir;
+}

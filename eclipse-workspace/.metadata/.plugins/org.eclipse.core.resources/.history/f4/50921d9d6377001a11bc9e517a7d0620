@@ -1,0 +1,33 @@
+package online.ideaup;
+
+import java.io.File;
+import java.util.Collection;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+
+public class MetadataTest {
+
+	public static void main(String[] args) {
+		File f = new File(args[0]);
+		
+		try {
+			Metadata m = ImageMetadataReader.readMetadata(f);
+			
+			Iterable<Directory> directories = m.getDirectories();
+			for (Directory d : directories) {
+				System.out.println(d);
+				Collection<Tag> tags = d.getTags();
+				for (Tag t : tags) {
+					System.out.println("    "+ t.getTagName() + " ["+ t.getTagTypeHex() +"]");
+				}
+			}
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+}

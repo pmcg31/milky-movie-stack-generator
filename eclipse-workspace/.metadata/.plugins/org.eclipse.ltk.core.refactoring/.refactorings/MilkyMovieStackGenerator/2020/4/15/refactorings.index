@@ -1,0 +1,7 @@
+1586107344136	Extract local variable 'directories'
+1586107652335	Extract local variable 'tags'
+1586108557350	Extract local variable 'dirsToCheck'
+1586111191218	Move type 'ImageFile' to new file
+1586113360877	Rename local variable 'stackFilePath'
+1586114252935	Extract local variable 'numStacks'
+1586114304885	Extract local variable 'filename'

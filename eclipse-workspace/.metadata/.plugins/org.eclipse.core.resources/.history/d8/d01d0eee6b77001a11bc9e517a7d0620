@@ -1,0 +1,15 @@
+package online.ideaup;
+
+import java.util.ArrayList;
+
+public class DSSStackFile {
+	public DSSStackFile(ArrayList<ImageFile> images, int leadIdx, int stackSize) {
+		_images = images;
+		_leadIdx = leadIdx;
+		_stackSize = stackSize;
+	}
+	
+	private ArrayList<ImageFile> _images;
+	private int _leadIdx;
+	private int _stackSize;
+}
